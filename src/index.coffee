@@ -1,4 +1,4 @@
-fs = require "fs"
+fs = require 'fs'
 RegExp.quote = require 'regexp-quote'
 
 
@@ -21,6 +21,7 @@ module.exports = class KeywordProcesser
 
   constructor: (@config) ->
     return unless @config.keyword
+    @publicPath = fs.realpathSync(@config.paths?.public ? 'public')
     @keywordConfig = @config.keyword or {}
     @filePattern = @keywordConfig.filePattern ? /\.(js|css|html)$/
     @keywordMap = @keywordConfig.map or {}
@@ -57,11 +58,16 @@ module.exports = class KeywordProcesser
     addMap @keywordMap
     keywords = (RegExp.quote(keyword) for key, replacer of @globalMap)
     @globalRE = RegExp('\\{\\!(' + keywords.join('|') + ')\\!\\}', 'g')
+    console.log @globalRE
 
 
   onCompile: (generatedFiles) ->
     return unless @filePattern
-    @prepareKeywords()
-    @processFolder @config.paths.public
+    try
+      @prepareGlobalRegExp()
+    catch e
+      console.log "#{e.stack}".split /\n/g
+      throw e
+    @processFolder @publicPath
     if (extraFiles = @keywordConfig.extraFiles) and extraFiles.length
       extraFiles.forEach (file) => @processFile file
