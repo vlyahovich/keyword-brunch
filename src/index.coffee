@@ -1,4 +1,5 @@
 fs = require 'fs'
+sysPath = require 'path'
 RegExp.quote = require 'regexp-quote'
 
 
@@ -30,35 +31,32 @@ module.exports = class KeywordProcesser
     fs.readdir folder, (err, fileList) =>
       throw err if err
       fileList.forEach (file) =>
-        filePath = "#{folder}/#{file}"
-        return unless @filePattern.test file
+        filePath = sysPath.join(folder, file)
         @processFile filePath
 
   processFile: (file) ->
-    fs.exists file, (isExist) =>
-      return console.log(file, "does not exist") if not isExist
+    fs.exists file, (exists) =>
+      return console.log(file, "does not exist") unless exists
       return @processFolder(file) if fs.lstatSync(file).isDirectory()
+      return unless @filePattern.test file
       return unless fileContent = fs.readFileSync file
-
-      resultContent = fileContent.replace @globalRegExp, (all, keyword) => @globalMap[keyword]
+      #console.log "Procesing file #{file}..."
+      resultContent = fileContent.toString().replace @globalRE, (all, keyword) => @globalMap[keyword]
       fs.writeFileSync file, resultContent
 
   prepareGlobalRegExp: ->
     @globalMap = {}
-    keywords = []
     addMap = (map) =>
       for keyword, processor of map
         if processor instanceof Function
           replace = processor()
         else
           replace = processor
-        keywords.push RegExp.quote(keyword)
         @globalMap[keyword] = replace
     addMap @generateDefaultMap()
     addMap @keywordMap
-    keywords = (RegExp.quote(keyword) for key, replacer of @globalMap)
+    keywords = (RegExp.quote(key) for key, replacer of @globalMap)
     @globalRE = RegExp('\\{\\!(' + keywords.join('|') + ')\\!\\}', 'g')
-    console.log @globalRE
 
 
   onCompile: (generatedFiles) ->
