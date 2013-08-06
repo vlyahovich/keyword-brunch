@@ -2,15 +2,12 @@
 make [brunch](http://brunch.io) replace keywords of public files after every time complied
 
 ## Usage
-<del>
-Add `"keyword-brunch": "x.y.z"` to `package.json` of your brunch app.
-
-Pick a plugin version that corresponds to your minor (y) brunch version.
-</del>
-
-If you want to use git version of plugin, add
-`"keyword-brunch": "git+ssh://git@github.com:bolasblack/keyword-brunch.git"`.
-
+### Install
+Install the plugin by running the following command:
+```sh
+npm install --save "git+ssh://git@github.com:huafu/keyword-brunch.git"
+```
+### Usage in your applicaiton
 Usage:
 
 ```coffeescript
@@ -19,21 +16,18 @@ module.exports =
     # file filter
     filePattern: /\.(js|css|html)$/
 
-    # Extra files, add brunch didn't process file here,
-    # will not filter by `filePattern`
+    # Extra files to process which `filePattern` wouldn't match
     extraFiles: [
       "public/humans.txt"
     ]
 
-    # Now keyword-brunch has these keyword:
+    # By default keyword-brunch has these keywords:
     #     {!version!}, {!name!}, {!date!}, {!timestamp!}
-    # read information from package.json
+    # using information from package.json
     map:
-      "{!version!}": processer
+      myDate: -> (new Date).toISOString()
+      someString: "hello"
 ```
 
-plugin will do:
+The plugin will replace any keyword in map surrounded with '{!' and '!}' by the result of the given associated function or with the given associated string. The functions are re-calculated on every build, but only once per build, not at every file.
 
-```coffeescript
-fileContent = fileContent.replace RegExp("{!version!}", "g"), processer
-```
