@@ -166,7 +166,6 @@ module.exports = SELF = class KeywordProcesser
               count = 0
               resultContent = data.toString().replace @globalRE, (dummy, keyword) =>
                 count++
-                console.error keyword
                 @globalMap[keyword]
               if count > 0
                 fs.writeFile file, resultContent, (err) ->
