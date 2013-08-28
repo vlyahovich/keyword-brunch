@@ -1,5 +1,8 @@
 # keyword-brunch 1.7.0
-* __1.7.0__ (2013-08-27)
+* __1.7.1__ (2013-08-27)
+    * Forgot to remove a `console.error` call
+
+* __1.7.0__ (2013-08-26)
     * Intial release in [my repository](https://github.com/huafu/keyword-brunch)
     * First release published in the npm repository with package name `keyword-brunch`
     * Made the `#onCompile` method ALL asynchrone
