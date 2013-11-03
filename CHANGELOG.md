@@ -1,4 +1,7 @@
 # keyword-brunch 1.7.0
+* __1.7.2__ (2013-11-03)
+	* Removed the dependency to node-ffi
+
 * __1.7.1__ (2013-08-27)
     * Forgot to remove a `console.error` call
 
