@@ -164,11 +164,15 @@ module.exports = SELF = class KeywordProcesser
               done err
             else
               count = 0
+              newFile = file.replace @globalRE, (dummy, keyword) =>
+                count++
+                @globalMap[keyword]
               resultContent = data.toString().replace @globalRE, (dummy, keyword) =>
                 count++
                 @globalMap[keyword]
               if count > 0
-                fs.writeFile file, resultContent, (err) ->
+                fs.unlinkSync file
+                fs.writeFile newFile, resultContent, (err) ->
                   done err, if err then 0 else count
               else
                 done null, 0
